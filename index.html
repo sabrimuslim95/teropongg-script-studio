@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAB BA RA — Prompt Studio</title>
+<style>
+:root {
+  --bg: #f4f6f8;
+  --card: #ffffff;
+  --text: #202b3c;
+  --muted: #667085;
+  --primary: #183153;
+  --accent: #d8e5f4;
+  --border: #dce3eb;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.55;
+}
+header {
+  background: var(--primary);
+  color: white;
+  padding: 28px 20px;
+}
+.header-inner, main {
+  width: min(1050px, 94%);
+  margin: auto;
+}
+.brand {
+  font-size: 25px;
+  font-weight: 800;
+  letter-spacing: 4px;
+}
+header p { margin-bottom: 0; color: #dbe6f4; }
+main { padding: 25px 0 50px; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+h2 { font-size: 19px; margin: 0 0 15px; }
+h3 { font-size: 15px; margin: 18px 0 8px; }
+.note {
+  background: #edf4fc;
+  border-left: 4px solid #496d99;
+  padding: 12px;
+  border-radius: 7px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field.full { grid-column: 1 / -1; }
+label { font-size: 13px; font-weight: 700; }
+input, select, textarea {
+  width: 100%;
+  border: 1px solid #cfd8e3;
+  border-radius: 8px;
+  padding: 11px;
+  background: white;
+  color: #202b3c;
+  font: inherit;
+  font-size: 14px;
+}
+textarea { min-height: 90px; resize: vertical; }
+.help { color: var(--muted); font-size: 12px; font-weight: 400; }
+.point {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 12px;
+  background: #fbfcfe;
+}
+.point-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.point-head strong { font-size: 14px; }
+.point-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 11px 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13px;
+}
+.primary { background: var(--primary); color: white; }
+.secondary { background: var(--accent); color: var(--primary); }
+.danger { background: #fce8e8; color: #9d2929; }
+.actions { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 14px; }
+.output {
+  width: 100%;
+  min-height: 300px;
+  font-family: Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.status { font-size: 13px; color: #236343; margin-top: 10px; }
+footer { text-align: center; color: var(--muted); font-size: 12px; padding: 20px; }
+@media(max-width:650px) {
+  .grid, .point-fields { grid-template-columns: 1fr; }
+  .field.full { grid-column: auto; }
+  .card { padding: 15px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="brand">SAB BA RA</div>
+    <h1>Prompt Studio</h1>
+    <p>Bina arahan skrip YouTube mengikut idea dan gaya anda.</p>
+  </div>
+</header>
+
+<main>
+  <div class="card">
+    <div class="note">
+      <strong>Bagaimana sistem ini berfungsi?</strong><br>
+      Website ini membina prompt secara percuma. Selepas siap, salin prompt dan tampal ke ChatGPT untuk menghasilkan skrip. Website ini tidak menjana skrip menggunakan AI secara langsung.
+    </div>
+    <h2>01 — Maklumat video</h2>
+    <div class="grid">
+      <div class="field">
+        <label for="channel">Nama channel</label>
+        <input id="channel" value="SAB BA RA">
+      </div>
+      <div class="field">
+        <label for="topic">Topik video</label>
+        <input id="topic" placeholder="Contoh: Keunikan tubuh manusia">
+      </div>
+      <div class="field full">
+        <label for="title">Tajuk pilihan (jika ada)</label>
+        <input id="title" placeholder="Kosongkan jika mahu ChatGPT cadangkan tajuk">
+      </div>
+      <div class="field">
+        <label for="format">Format video</label>
+        <select id="format">
+          <option value="Long-form YouTube">Long-form YouTube</option>
+          <option value="YouTube Shorts">YouTube Shorts</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="duration">Durasi sasaran</label>
+        <select id="duration">
+          <option>8–10 minit</option>
+          <option>5–7 minit</option>
+          <option>10–15 minit</option>
+          <option>15–20 minit</option>
+          <option>30–60 saat</option>
+          <option>60–180 saat</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="introDuration">Durasi hook / intro</label>
+        <select id="introDuration">
+          <option>10–15 saat</option>
+          <option selected>20–30 saat</option>
+          <option>30–45 saat</option>
+          <option>45–60 saat</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="outroDuration">Durasi penutup</label>
+        <select id="outroDuration">
+          <option>10–15 saat</option>
+          <option selected>20–30 saat</option>
+          <option>30–45 saat</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label for="tone">Gaya penceritaan</label>
+        <select id="tone">
+          <option>Natural, santai dan informatif</option>
+          <option>Misteri dan suspense</option>
+          <option>Sains yang mudah difahami</option>
+          <option>Sejarah dan kisah benar</option>
+          <option>Teknologi dan dunia moden</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>02 — Pendahuluan dan penutup</h2>
+    <div class="grid">
+      <div class="field full">
+        <label for="introIdea">Idea sendiri untuk hook / intro</label>
+        <textarea id="introIdea" placeholder="Contoh: Mulakan dengan persoalan yang membuatkan penonton tertanya-tanya."></textarea>
+      </div>
+      <div class="field full">
+        <label for="outroIdea">Idea sendiri untuk penutup</label>
+        <textarea id="outroIdea" placeholder="Contoh: Akhiri dengan satu fakta atau persoalan yang meninggalkan kesan."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>03 — Isi utama video</h2>
+    <p class="help">Tambah satu ruangan bagi setiap point. Anda boleh menetapkan isi wajib, soalan dan arahan berbeza untuk setiap point.</p>
+    <div id="points"></div>
+    <div class="actions">
+      <button class="secondary" id="addPoint">+ Tambah point</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>04 — Arahan untuk semua point</h2>
+    <div class="grid">
+      <div class="field full">
+        <label for="generalQuestions">Soalan panduan untuk setiap point</label>
+        <textarea id="generalQuestions">1. Terangkan bagaimana atau mengapa perkara ini berlaku.
+2. Berikan contoh yang tepat jika ada bukti.
+3. Apakah fakta menarik yang membantu penonton memahami topik?
+4. Apakah salah faham atau mitos yang berkaitan, jika benar-benar relevan?
+5. Apakah bukti yang menyokong penjelasan tersebut?</textarea>
+      </div>
+      <div class="field full">
+        <label for="overallNotes">Nota tambahan untuk keseluruhan skrip</label>
+        <textarea id="overallNotes" placeholder="Contoh: Gunakan ayat pendek, elakkan istilah teknikal berlebihan dan pastikan transisi antara point lancar."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>05 — Tetapan output</h2>
+    <div class="grid">
+      <div class="field">
+        <label for="visuals">Cadangan visual</label>
+        <select id="visuals">
+          <option>Cadangkan visual bagi setiap bahagian</option>
+          <option>Visual ringkas sahaja</option>
+          <option>Visual terperinci mengikut ayat</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="research">Semakan fakta</label>
+        <select id="research">
+          <option>Semak fakta dan sertakan sumber jika tersedia</option>
+          <option>Utamakan sumber rasmi dan kajian akademik</option>
+          <option>Semak fakta tanpa memerlukan pautan bagi setiap ayat</option>
+        </select>
+      </div>
+      <div class="field full">
+        <label for="descriptionNotes">Arahan tambahan untuk description YouTube</label>
+        <textarea id="descriptionNotes" placeholder="Contoh: Pastikan description ringkas, mesra dan berkaitan dengan kandungan sebenar."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>06 — Prompt anda</h2>
+    <p class="help">Klik butang untuk membina prompt berdasarkan semua maklumat yang telah diisi.</p>
+    <div class="actions">
+      <button class="primary" id="build">Bina prompt</button>
+      <button class="secondary" id="copy">Salin prompt</button>
+      <button class="danger" id="reset">Kosongkan borang</button>
+    </div>
+    <p id="status" class="status" aria-live="polite"></p>
+    <label for="output">Prompt penuh untuk disalin ke ChatGPT</label>
+    <textarea id="output" class="output" placeholder="Prompt akan muncul di sini..."></textarea>
+  </div>
+</main>
+
+<footer>SAB BA RA · Prompt Studio · Pembina prompt manual</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+let pointCount = 0;
+
+function addPoint(title = "", content = "", questions = "", instructions = "") {
+  pointCount++;
+  const number = pointCount;
+  const item = document.createElement("div");
+  item.className = "point";
+  item.dataset.point = number;
+  item.innerHTML = `
+    <div class="point-head">
+      <strong>Point ${number}</strong>
+      <button type="button" class="danger remove">Buang point</button>
+    </div>
+    <div class="point-fields">
+      <div class="field" style="grid-column:1/-1">
+        <label>Tajuk / nama point</label>
+        <input class="p-title" placeholder="Contoh: Mata biru" value="${escapeAttr(title)}">
+      </div>
+      <div class="field">
+        <label>Isi atau fakta wajib</label>
+        <textarea class="p-content" placeholder="Apakah perkara yang mesti diterangkan?">${escapeHtml(content)}</textarea>
+      </div>
+      <div class="field">
+        <label>Soalan khusus untuk point ini</label>
+        <textarea class="p-questions" placeholder="Apakah soalan yang mesti dijawab?">${escapeHtml(questions)}</textarea>
+      </div>
+      <div class="field" style="grid-column:1/-1">
+        <label>Arahan khas (pilihan)</label>
+        <textarea class="p-instructions" placeholder="Contoh: Terangkan menggunakan bahasa mudah dan jangan terlalu teknikal.">${escapeHtml(instructions)}</textarea>
+      </div>
+    </div>`;
+  item.querySelector(".remove").addEventListener("click", () => {
+    item.remove();
+    renumberPoints();
+  });
+  $("points").appendChild(item);
+  renumberPoints();
+}
+
+function renumberPoints() {
+  [...$("points").children].forEach((el, i) => {
+    el.querySelector(".point-head strong").textContent = "Point " + (i + 1);
+  });
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, ch => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[ch]);
+}
+function escapeAttr(value) { return escapeHtml(value); }
+
+function buildPrompt() {
+  const topic = $("topic").value.trim();
+  if (!topic) {
+    $("status").textContent = "Sila isi topik video terlebih dahulu.";
+    $("topic").focus();
+    return "";
+  }
+
+  const points = [...$("points").children].map((el, i) => {
+    const title = el.querySelector(".p-title").value.trim() || `Point ${i + 1}`;
+    const content = el.querySelector(".p-content").value.trim() || "Tiada isi wajib khusus.";
+    const questions = el.querySelector(".p-questions").value.trim() || "Tiada soalan khusus tambahan.";
+    const instructions = el.querySelector(".p-instructions").value.trim() || "Tiada arahan khas tambahan.";
+    return `${i + 1}. ${title}
+   Isi/fakta wajib: ${content}
+   Soalan yang mesti dijawab: ${questions}
+   Arahan khas: ${instructions}`;
+  }).join("\n\n");
+
+  return `ANDA IALAH PENULIS SKRIP DAN PEMBANTU RESEARCH UNTUK YOUTUBE.
+
+MAKLUMAT VIDEO
+Nama channel: ${$("channel").value.trim() || "SAB BA RA"}
+Topik: ${topic}
+Tajuk pilihan: ${$("title").value.trim() || "Cadangkan 5 tajuk yang menarik dan tepat"}
+Format: ${$("format").value}
+Durasi sasaran: ${$("duration").value}
+Durasi hook/intro: ${$("introDuration").value}
+Durasi penutup: ${$("outroDuration").value}
+Gaya penceritaan: ${$("tone").value}
+
+IDEA PENCIPTA
+Idea hook/intro:
+${$("introIdea").value.trim() || "Cipta hook yang menarik, natural dan berdasarkan fakta yang boleh disahkan."}
+
+Idea penutup:
+${$("outroIdea").value.trim() || "Simpulkan cerita secara natural dan tinggalkan satu idea menarik untuk penonton fikirkan."}
+
+ISI VIDEO MENGIKUT POINT
+${points || "Belum ada point khusus. Cadangkan struktur yang sesuai dengan topik dan nyatakan fakta yang perlu disahkan."}
+
+SOALAN PANDUAN UNTUK SEMUA POINT
+${$("generalQuestions").value.trim()}
+
+GAYA PENULISAN WAJIB
+- Gunakan Bahasa Melayu yang natural, santai dan mudah dibaca kuat, seolah-olah bercerita kepada penonton.
+- Kekalkan nada tenang, curious, informatif dan sedikit misteri jika sesuai.
+- Jangan menulis seperti Wikipedia, esei akademik atau pembaca berita yang terlalu formal.
+- Elakkan slang berlebihan seperti “korang”, “guys” dan “weh”.
+- Gunakan ayat yang jelas, transisi yang lancar dan perkataan yang mudah difahami.
+- Jangan terlalu panjang menerangkan istilah teknikal. Jika istilah penting, terangkan dengan bahasa mudah.
+- Bina hook yang kuat tanpa mereka-reka statistik, fakta mengejutkan atau dakwaan sensasi.
+- Ikut isi wajib, soalan dan arahan khas untuk setiap point. Jawab semua soalan di bawah point yang betul; jangan tercicir atau campurkan sehingga maksudnya hilang.
+- Jangan menambah dakwaan sebagai fakta jika belum disahkan.
+- Jangan memaksa mitos dimasukkan hanya untuk hiburan. Jika mitos atau dakwaan popular relevan, labelkan dengan jelas dan jelaskan status buktinya.
+- Jangan cipta sumber, pautan, statistik, nama kajian, negara atau populasi.
+- Jika sesuatu maklumat tidak dapat disahkan, nyatakan dengan jelas. Bezakan fakta yang disahkan, anggaran, perkara yang diperdebatkan dan dakwaan yang belum terbukti.
+- Jika mempunyai akses research, gunakan sumber yang boleh dipercayai dan sertakan pautan. Jika tiada akses research, jangan mendakwa semakan web telah dibuat.
+
+NOTA TAMBAHAN PENCIPTA
+${$("overallNotes").value.trim() || "Tiada nota tambahan."}
+
+ARAHAN OUTPUT
+1. Berikan 5 pilihan tajuk yang menarik tetapi tepat, kemudian cadangkan satu tajuk utama.
+2. Berikan rangka skrip dengan anggaran masa setiap bahagian.
+3. Tulis skrip narasi penuh, termasuk hook/intro, semua point, transisi dan penutup.
+4. Nyatakan anggaran jumlah perkataan dan anggaran durasi bacaan. Pastikan panjang munasabah untuk durasi sasaran.
+5. Sertakan tanda masa untuk setiap bahagian dan cadangan visual bagi setiap bahagian.
+6. Selepas skrip, sediakan nota fact-check berasingan yang menyenaraikan dakwaan penting, status pengesahan dan sumber/pautan jika tersedia. Nyatakan perkara yang perlu disemak secara manual.
+7. Akhiri output dengan DESCRIPTION YOUTUBE mengikut susunan tepat ini:
+   A. Satu perenggan ringkas yang menerangkan kandungan sebenar video.
+   B. 1–3 soalan relevan untuk menggalakkan penonton memberikan komen.
+   C. 8–15 hashtag relevan pada baris terakhir.
+8. Cadangan visual: ${$("visuals").value}
+9. Arahan semakan fakta: ${$("research").value}
+10. Arahan description tambahan: ${$("descriptionNotes").value.trim() || "Pastikan description tepat, ringkas dan mesra. Hashtag mesti berkaitan dengan tajuk serta isi sebenar."}
+
+Sebelum menulis, semak bahawa setiap isi wajib dan setiap soalan khusus telah dijawab. Jangan mendakwa fakta disahkan tanpa asas. Jika maklumat penting tiada, nyatakan batasan dengan jelas dan teruskan menggunakan maklumat yang boleh dipertanggungjawabkan.`;
+}
+
+$("addPoint").addEventListener("click", () => addPoint());
+$("build").addEventListener("click", () => {
+  const prompt = buildPrompt();
+  if (!prompt) return;
+  $("output").value = prompt;
+  $("status").textContent = "Prompt berjaya dibina. Anda boleh menyalinnya ke ChatGPT.";
+});
+
+$("copy").addEventListener("click", async () => {
+  if (!$("output").value.trim()) {
+    const prompt = buildPrompt();
+    if (!prompt) return;
+    $("output").value = prompt;
+  }
+  try {
+    await navigator.clipboard.writeText($("output").value);
+    $("status").textContent = "Prompt berjaya disalin. Tampal ke ChatGPT.";
+  } catch {
+    $("output").focus();
+    $("output").select();
+    $("status").textContent = "Prompt telah dipilih. Tekan Ctrl+C untuk menyalin.";
+  }
+});
+
+$("reset").addEventListener("click", () => {
+  if (!confirm("Kosongkan semua maklumat dalam borang?")) return;
+  ["topic","title","introIdea","outroIdea","overallNotes","descriptionNotes","output"].forEach(id => $(id).value = "");
+  $("channel").value = "SAB BA RA";
+  $("format").selectedIndex = 0;
+  $("duration").selectedIndex = 0;
+  $("introDuration").selectedIndex = 1;
+  $("outroDuration").selectedIndex = 1;
+  $("tone").selectedIndex = 0;
+  $("visuals").selectedIndex = 0;
+  $("research").selectedIndex = 0;
+  $("generalQuestions").value = "1. Terangkan bagaimana atau mengapa perkara ini berlaku.\n2. Berikan contoh yang tepat jika ada bukti.\n3. Apakah fakta menarik yang membantu penonton memahami topik?\n4. Apakah salah faham atau mitos yang berkaitan, jika benar-benar relevan?\n5. Apakah bukti yang menyokong penjelasan tersebut?";
+  $("points").innerHTML = "";
+  pointCount = 0;
+  addPoint();
+  $("status").textContent = "Borang telah dikosongkan.";
+});
+
+addPoint();
+</script>
+</body>
+</html>
